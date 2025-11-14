@@ -115,7 +115,7 @@ VALUES(col1,col2,col3,col4,col5)
 */
 DROP TABLE IF EXISTS temp.new_vendor;
 
-CREATE TEMP TABLE temp.new_vendor AS
+CREATE TABLE temp.new_vendor AS
 SELECT * FROM vendor;
 
 INSERT INTO temp.new_vendor
