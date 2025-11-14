@@ -99,7 +99,7 @@ FROM customer AS c
 INNER JOIN customer_purchases AS cp ON c.customer_id = cp.customer_id
 GROUP BY c.customer_id
 HAVING SUM(cost_to_customer_per_qty*quantity) > 2000
-ORDER BY c.customer_last_name, c.customer_first_name;
+ORDER BY c.customer_id ;
 
 
 --Temp Table
