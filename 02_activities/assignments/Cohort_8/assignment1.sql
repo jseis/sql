@@ -27,12 +27,12 @@ filtered by customer IDs between 8 and 10 (inclusive) using either:
 	2.  one condition using BETWEEN
 */
 -- option 1
-SELECT *, (quantity * cost_to_customer_per_qty) AS 'price'
+SELECT *, (quantity * cost_to_customer_per_qty) AS price
 FROM customer_purchases
 WHERE customer_id >= 8 AND customer_id <= 10;
 
 -- option 2
-SELECT *, (quantity * cost_to_customer_per_qty) AS 'price'
+SELECT *, (quantity * cost_to_customer_per_qty) AS price
 FROM customer_purchases
 WHERE customer_id BETWEEN 8 AND 10;
 
@@ -48,7 +48,7 @@ SELECT
 	CASE 
 		WHEN product_qty_type = 'unit' THEN 'unit'  
 		ELSE 'bulk'
-	END AS 'prod_qty_type_condensed'
+	END AS prod_qty_type_condensed
 FROM product;
 
 
@@ -61,7 +61,7 @@ SELECT
 	CASE 
 		WHEN product_qty_type = 'unit' THEN 'unit'  
 		ELSE 'bulk' 
-	END AS 'prod_qty_type_condensed',
+	END AS prod_qty_type_condensed,
 	CASE 
 		WHEN LOWER(product_name) LIKE '%pepper%' THEN 1
 		ELSE 0
@@ -84,7 +84,7 @@ ORDER BY v.vendor_name, vba.market_date;
 -- AGGREGATE
 /* 1. Write a query that determines how many times each vendor has rented a booth 
 at the farmer’s market by counting the vendor booth assignments per vendor_id. */
-SELECT vendor_id, COUNT(1) AS 'count'
+SELECT vendor_id, COUNT(vendor_id) AS [count]
 FROM vendor_booth_assignments
 GROUP BY vendor_id;
 
