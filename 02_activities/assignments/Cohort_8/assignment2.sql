@@ -59,10 +59,6 @@ SELECT
 FROM customer_purchases
 GROUP BY market_date, customer_id;
 
---For testing purposes only
-SELECT customer_id, count(DISTINCT market_date) FROM customer_purchases
-GROUP BY customer_id;
-
 
 /* 2. Reverse the numbering of the query from a part so each customer’s most recent visit is labeled 1, 
 then write another query that uses this one as a subquery (or temp table) and filters the results to 
@@ -261,7 +257,6 @@ SELECT
 		PARTITION BY p.product_id
 		ORDER BY market_date DESC
 	) AS recentness_ranking
---FROM vendor_inventory AS vi
 FROM product AS p
 LEFT JOIN vendor_inventory AS vi ON p.product_id = vi.product_id
 ;
@@ -273,9 +268,4 @@ FROM temp.recent_inventories as ri
 WHERE pu.product_id = ri.product_id
 AND ri.recentness_ranking = 1;
 
-
-SELECT * FROM temp.recent_inventories
-WHERE recentness_ranking = 1;
-SELECT * FROM product_units
-ORDER BY product_id;
 
