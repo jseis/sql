@@ -216,24 +216,20 @@ WHERE product_qty_type = 'unit';
 This can be any product you desire (e.g. add another record for Apple Pie). */
 
 INSERT INTO product_units
-VALUES(24, 'Whole Wheat Bread', '1.5 lbs', 3, 'unit', CURRENT_TIMESTAMP); 
+VALUES(5, 'Whole Wheat Bread', '1.5 lbs', 3, 'unit', CURRENT_TIMESTAMP); 
 
 -- DELETE
 /* 1. Delete the older record for the whatever product you added. 
 
 HINT: If you don't specify a WHERE clause, you are going to have a bad time.*/
 
-/*If it's required that the delete condition be timestamp-based. 
-however, if the create table and insert commands are run in quick succession, this method fails to distinguish.
-*/ 	
+/*If the create table and insert commands are run in quick succession, this method fails to distinguish between old and new.
+*/
+ 	
 DELETE FROM product_units 
 WHERE product_name = 'Whole Wheat Bread'
 AND snapshot_timestamp = (SELECT MIN(snapshot_timestamp) FROM product_units WHERE product_name='Whole Wheat Bread');
 
-/*manual deletion of the older record*/
-DELETE FROM product_units 
-WHERE product_name = 'Whole Wheat Bread'
-AND product_id = 5;
 
 -- UPDATE
 /* 1.We want to add the current_quantity to the product_units table. 
@@ -255,4 +251,31 @@ When you have all of these components, you can run the update statement. */
 ALTER TABLE product_units
 ADD current_quantity INT;
 
+DROP TABLE IF EXISTS temp.recent_inventories;
+CREATE TABLE temp.recent_inventories AS
+SELECT 
+	p.product_id, 
+	coalesce(quantity,0) quantity, 
+	market_date,
+	row_number() OVER (
+		PARTITION BY p.product_id
+		ORDER BY market_date DESC
+	) AS recentness_ranking
+--FROM vendor_inventory AS vi
+FROM product AS p
+LEFT JOIN vendor_inventory AS vi ON p.product_id = vi.product_id
+;
+
+
+UPDATE product_units AS pu
+SET current_quantity = ri.quantity
+FROM temp.recent_inventories as ri
+WHERE pu.product_id = ri.product_id
+AND ri.recentness_ranking = 1;
+
+
+SELECT * FROM temp.recent_inventories
+WHERE recentness_ranking = 1;
+SELECT * FROM product_units
+ORDER BY product_id;
 
