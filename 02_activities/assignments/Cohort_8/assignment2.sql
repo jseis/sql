@@ -222,18 +222,18 @@ VALUES(24, 'Whole Wheat Bread', '1.5 lbs', 3, 'unit', CURRENT_TIMESTAMP);
 /* 1. Delete the older record for the whatever product you added. 
 
 HINT: If you don't specify a WHERE clause, you are going to have a bad time.*/
-WITH x AS (
-	SELECT row_number() OVER (
-	PARTITION BY product_name
-	ORDER BY snapshot_timestamp ASC
-	) AS time_rank
-	FROM product_units
-)
+
+/*If it's required that the delete condition be timestamp-based. 
+however, if the create table and insert commands are run in quick succession, this method fails to distinguish.
+*/ 	
 DELETE FROM product_units 
 WHERE product_name = 'Whole Wheat Bread'
-AND (SELECT time_rank FROM x) = 1;
-SELECT * FROM product_units;
+AND snapshot_timestamp = (SELECT MIN(snapshot_timestamp) FROM product_units WHERE product_name='Whole Wheat Bread');
 
+/*manual deletion of the older record*/
+DELETE FROM product_units 
+WHERE product_name = 'Whole Wheat Bread'
+AND product_id = 5;
 
 -- UPDATE
 /* 1.We want to add the current_quantity to the product_units table. 
@@ -252,6 +252,7 @@ Finally, make sure you have a WHERE statement to update the right row,
 	you'll need to use product_units.product_id to refer to the correct row within the product_units table. 
 When you have all of these components, you can run the update statement. */
 
-
+ALTER TABLE product_units
+ADD current_quantity INT;
 
 
